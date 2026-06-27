@@ -90,6 +90,18 @@ The patch touches only four files (`src/bltGraph.{c,h}`, `src/bltGrAxis.{c,h}`),
 ~375 added lines, and is additive — with the options at their defaults the
 rendering is identical to stock BLT, just faster.
 
+## Do I need to change my application code?
+
+**No — not for `-cachelabels`.** Because it's on by default, every existing
+`graph` / `stripchart` / `barchart` in your application gets the label-cache
+speedup the moment it runs on the patched BLT. No Tcl changes, no recompiling
+your app, nothing to opt into. (We confirmed this on a real app — the Decent DE1
+espresso UI — whose charts sped up with zero application-side changes.)
+
+The **only** time you touch application code is if you want `-bufferchrome` on a
+particular graph — that one is opt-in, so add `-bufferchrome 1` to that graph's
+creation or `configure`.
+
 ## Turning the options on/off
 
 Both are ordinary boolean graph options, settable at creation or via `configure`:
