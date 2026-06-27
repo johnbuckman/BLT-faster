@@ -40,7 +40,7 @@
  #define DEF_GRAPH_BORDERWIDTH		STD_BORDERWIDTH
  #define DEF_GRAPH_BUFFER_ELEMENTS	"1"
  #define DEF_GRAPH_BUFFER_GRAPH		"1"
-+#define DEF_GRAPH_BUFFER_CHROME		"1"
++#define DEF_GRAPH_BUFFER_CHROME		"0"
 +#define DEF_GRAPH_CACHE_LABELS		"1"
  #define DEF_GRAPH_CURSOR		"crosshair"
  #define DEF_GRAPH_FONT			STD_FONT_LARGE
@@ -91,7 +91,7 @@
      graphPtr->classUid = classUid;
      graphPtr->backingStore = TRUE;
      graphPtr->doubleBuffer = TRUE;
-+    graphPtr->bufferChrome = TRUE;
++    graphPtr->bufferChrome = FALSE;
 +    graphPtr->chromePixmap = None;
 +    graphPtr->chromeValid = 0;
 +    graphPtr->cacheLabels = TRUE;

@@ -6,16 +6,22 @@ chart looks**. Ships as a small C patch against BLT 2.4 (as bundled in
 [AndroWish](https://www.androwish.org/) / undroidwish, and most other BLT 2.4
 trees).
 
-Two new graph options, **both on by default** after patching:
+Two new graph options:
 
-| option | what it does | speedup | visual change |
-|--------|--------------|---------|---------------|
-| `-cachelabels`  | caches rendered axis tick-label sprites and blits them instead of re-rasterizing the text every redraw | **~1.3×** on live charts | none — pixel-identical |
-| `-bufferchrome` | caches the entire static "chrome" (axes, grid, tick labels, background, border) and redraws only the data lines on top | **~1.9×** on graphs whose axes don't move between frames | none |
+| option | default | what it does | speedup | visual change |
+|--------|---------|--------------|---------|---------------|
+| `-cachelabels`  | **on**  | caches rendered axis tick-label sprites and blits them instead of re-rasterizing the text every redraw | **~1.3×** on live charts | none — pixel-identical |
+| `-bufferchrome` | **off** (opt-in) | caches the entire static "chrome" (axes, grid, tick labels, background, border) and redraws only the data lines on top | **~1.9×** on graphs whose axes don't move between frames | none |
 
-You don't have to change a single line of Tcl: patch BLT, rebuild, and every
-graph gets faster automatically. To opt a graph out, set the option to `0`
-(e.g. `-bufferchrome 0`).
+`-cachelabels` is **on by default** because it's a free, pixel-identical win for
+any graph — patch BLT, rebuild, and every graph's labels get cheaper, no Tcl
+changes needed.
+
+`-bufferchrome` is **off by default** and opt-in (`-bufferchrome 1`), because its
+benefit depends on the graph: it's a big win when the axes are static or change
+rarely, but on a graph whose x-axis auto-rescales on every frame (a classic
+live stripchart) it can't cache anything and is slightly slower. Turn it on for
+the graphs that suit it.
 
 ## Why this exists
 
@@ -77,28 +83,28 @@ Or use the helper:
 ./apply-patch.sh /path/to/blt
 ```
 
-After rebuilding, every graph has `-cachelabels` and `-bufferchrome` **on by
-default**. Nothing else to do.
+After rebuilding, every graph has `-cachelabels` **on** automatically. To also
+cache the chrome on a static-axis graph, opt in with `-bufferchrome 1`.
 
 The patch touches only four files (`src/bltGraph.{c,h}`, `src/bltGrAxis.{c,h}`),
 ~375 added lines, and is additive — with the options at their defaults the
 rendering is identical to stock BLT, just faster.
 
-## Turning it off
+## Turning the options on/off
 
-Per-graph (Tcl):
+Both are ordinary boolean graph options, settable at creation or via `configure`:
 
 ```tcl
-.g configure -bufferchrome 0     ;# disable chrome cache for this graph
-.g configure -cachelabels  0     ;# disable label cache for this graph
+.g configure -bufferchrome 1     ;# opt IN to the chrome cache (default off)
+.g configure -cachelabels  0     ;# opt OUT of the label cache (default on)
 ```
 
 `-cachelabels` is always safe to leave on (pixel-identical, helps any graph).
-`-bufferchrome` is best left on for graphs whose axes are static or change
-rarely; on a graph whose **x-axis auto-resizes on every single frame** it can't
-cache anything useful and adds one extra full-window blit, so it's roughly
-neutral-to-slightly-slower there — set `-bufferchrome 0` on such graphs if you
-want to shave that.
+Turn `-bufferchrome` on for graphs whose axes are static or change rarely
+(history views, dashboards, finished plots, fixed-range live charts) — that's
+where the ~1.9× lives. Leave it off for a graph whose **x-axis auto-resizes on
+every single frame**, where it can't cache anything useful and adds one extra
+full-window blit (roughly neutral-to-slightly-slower).
 
 ## Correctness & compatibility
 

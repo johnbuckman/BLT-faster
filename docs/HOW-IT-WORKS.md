@@ -93,12 +93,17 @@ chrome together* and is therefore invalidated on every data change.
   it's roughly neutral to ~15 % slower. Set `-bufferchrome 0` on such a graph,
   or give it a fixed/stepped axis so the chrome can be cached.
 
-## Defaults & opting out
+## Defaults & opting in/out
 
-Both options default to **on** (`DEF_GRAPH_CACHE_LABELS` / `DEF_GRAPH_BUFFER_CHROME`
-= `"1"`, with the struct fields initialized `TRUE` in `CreateGraph`). They are
-ordinary boolean graph options, so a graph opts out with `-cachelabels 0` /
-`-bufferchrome 0` at creation or via `configure`.
+* `-cachelabels` defaults **on** (`DEF_GRAPH_CACHE_LABELS = "1"`, field `TRUE` in
+  `CreateGraph`) — it's a free, pixel-identical win for any graph.
+* `-bufferchrome` defaults **off** (`DEF_GRAPH_BUFFER_CHROME = "0"`, field
+  `FALSE`) — opt in with `-bufferchrome 1` on the graphs that suit it (static /
+  rarely-changing axes), since on a per-frame-rescaling axis it's a slight loss.
+
+Both are ordinary boolean graph options, settable at creation or via `configure`
+(`-cachelabels 0` to opt out of label caching, `-bufferchrome 1` to opt in to
+chrome caching).
 
 ## Limitations
 
