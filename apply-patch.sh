@@ -31,5 +31,5 @@ patch -p1 -d "$blt" < "$patch_file"
 
 echo
 echo "Done. Now rebuild BLT the way you normally do."
-echo "Both -cachelabels and -bufferchrome are now ON by default;"
-echo "disable per-graph with '-cachelabels 0' / '-bufferchrome 0'."
+echo "-cachelabels is ON by default (disable per-graph with '-cachelabels 0');"
+echo "-bufferchrome is OFF by default (enable per-graph with '-bufferchrome 1')."

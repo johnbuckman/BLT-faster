@@ -149,7 +149,10 @@ These options are designed and documented but not yet part of the applied patch.
 
 * **`-cachelabels` is verified pixel-identical** (snapshot comparison, zero
   differing pixels) and falls back to normal drawing for rotated / active /
-  shadowed labels.
+  shadowed labels, and for a label whose position is outside the 16-bit X
+  coordinate range. That happens before a graph's first layout; blitting there
+  crashed AndroWish (SDL's blit clipping overflowed) and could misplace the
+  label on X11.
 * **`-bufferchrome`** reproduces a full redraw exactly on a cache *miss*, and on
   a cache *hit* the chrome is by definition unchanged. Its signature tracks
   graph geometry, focus, and each axis's range + tick counts, and it invalidates
